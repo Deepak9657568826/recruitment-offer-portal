@@ -1,0 +1,1 @@
+export { default as UprioLogo } from "./uprio-logo.svg";

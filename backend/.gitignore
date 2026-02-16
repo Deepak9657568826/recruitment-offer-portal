@@ -1,0 +1,5 @@
+.env
+node_modules
+
+# Uploads directory - contains sensitive PDF files
+uploads/
