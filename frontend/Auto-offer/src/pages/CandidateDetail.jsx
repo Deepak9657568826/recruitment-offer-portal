@@ -3,10 +3,20 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { HiArrowLeft, HiPencil } from 'react-icons/hi';
 import Navbar from '../components/Navbar';
 import { candidateAPI } from '../services/api';
+import { useToast } from '../context/ToastContext';
+
+const STATUS_CONFIG = {
+  pending: { label: 'Pending', bgClass: 'bg-gray-100', textClass: 'text-gray-700', borderClass: 'border-gray-200' },
+  offer_sent: { label: 'Offer Sent', bgClass: 'bg-purple-50', textClass: 'text-purple-800', borderClass: 'border-purple-200' },
+  accepted: { label: 'Accepted', bgClass: 'bg-green-50', textClass: 'text-green-800', borderClass: 'border-green-200' },
+  rejected: { label: 'Rejected', bgClass: 'bg-red-50', textClass: 'text-red-800', borderClass: 'border-red-200' },
+  joined: { label: 'Joined', bgClass: 'bg-blue-50', textClass: 'text-blue-800', borderClass: 'border-blue-200' },
+};
 
 const CandidateDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { showToast } = useToast();
   const [candidate, setCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,6 +33,16 @@ const CandidateDetail = () => {
       console.error('Error fetching candidate:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      await candidateAPI.updateStatus(id, newStatus);
+      showToast(`Status updated to ${STATUS_CONFIG[newStatus].label}`, 'success');
+      fetchCandidate();
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to update status', 'error');
     }
   };
 
@@ -142,24 +162,23 @@ const CandidateDetail = () => {
                   {candidate.salaryLPA ? `₹${candidate.salaryLPA}` : '-'}
                 </p>
               </div>
-              <div className={`p-4 rounded-lg border-2 ${candidate.isEmailSent ? 'bg-purple-50 border-purple-200' : 'bg-gray-50 border-gray-200'}`}>
-                <p className="text-sm text-gray-600 mb-1">Email Status</p>
-                <div className="flex items-center gap-2">
-                  {candidate.isEmailSent ? (
-                    <>
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <p className="text-base font-semibold text-purple-700">Offer Letter Sent</p>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      <p className="text-base font-semibold text-gray-700">Not Sent</p>
-                    </>
-                  )}
+              <div className={`p-4 rounded-lg border-2 ${STATUS_CONFIG[candidate.status || 'pending'].bgClass} ${STATUS_CONFIG[candidate.status || 'pending'].borderClass}`}>
+                <p className="text-sm text-gray-600 mb-2">Candidate Status</p>
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${STATUS_CONFIG[candidate.status || 'pending'].bgClass} ${STATUS_CONFIG[candidate.status || 'pending'].textClass}`}>
+                    {STATUS_CONFIG[candidate.status || 'pending'].label}
+                  </span>
+                  <select
+                    value={candidate.status || 'pending'}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="offer_sent">Offer Sent</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="joined">Joined</option>
+                  </select>
                 </div>
               </div>
               {candidate.offerLetterPDF && (

@@ -25,6 +25,11 @@ const candidateSchema =  mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ['pending', 'offer_sent', 'accepted', 'rejected', 'joined'],
+      default: 'pending',
+    },
   },
   {
     versionKey: false,

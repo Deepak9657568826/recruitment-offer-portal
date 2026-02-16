@@ -32,6 +32,12 @@ const Navbar = () => {
             >
               Dashboard
             </button>
+            <button
+              onClick={() => navigate('/email-settings')}
+              className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-base font-medium transition-all hover:bg-blue-50"
+            >
+              Email Settings
+            </button>
           </div>
 
           {/* User Menu */}
@@ -76,6 +82,15 @@ const Navbar = () => {
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
                   📊 Dashboard
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate('/email-settings');
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                >
+                  ⚙️ Email Settings
                 </button>
                 <button
                   onClick={() => {

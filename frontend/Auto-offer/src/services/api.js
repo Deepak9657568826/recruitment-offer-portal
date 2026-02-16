@@ -55,9 +55,11 @@ export const candidateAPI = {
       : {};
     return api.post('/createCandidate', candidateData, config);
   },
-  getAll: (search = '', page = 1, limit = 10, emailStatus = 'all') => api.get('/getAllCandidates', {
-    params: { search, page, limit, emailStatus }
+  getAll: (search = '', page = 1, limit = 10, emailStatus = 'all', status = 'all') => api.get('/getAllCandidates', {
+    params: { search, page, limit, emailStatus, status }
   }),
+  getStats: () => api.get('/candidateStats'),
+  updateStatus: (id, status) => api.patch(`/updateCandidateStatus/${id}`, { status }),
   getById: (id) => api.get(`/getCandidate/${id}`),
   update: (id, candidateData) => {
     const config = candidateData instanceof FormData
@@ -71,6 +73,13 @@ export const candidateAPI = {
 // Email APIs
 export const emailAPI = {
   sendOfferLetter: (candidateId) => api.post(`/sendEmail/${candidateId}`),
+  sendBulkOfferLetters: (candidateIds) => api.post('/sendBulkEmail', { candidateIds }),
+};
+
+// Template APIs
+export const templateAPI = {
+  get: () => api.get('/emailTemplate'),
+  update: (templateData) => api.patch('/emailTemplate', templateData),
 };
 
 export default api;

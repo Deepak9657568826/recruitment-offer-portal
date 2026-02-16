@@ -6,6 +6,7 @@ const { userRouter } = require('./route/user.route');
 const { authRouter } = require('./route/auth.route');
 const { candidateRouter } = require('./route/candidate.route');
 const { emailRouter } = require('./route/email.route');
+const { templateRouter } = require('./route/template.route');
 
 const app = express()
 app.use(cors())
@@ -21,6 +22,7 @@ app.use("/", userRouter)
 app.use("/", authRouter)
 app.use("/", candidateRouter)
 app.use("/", emailRouter)
+app.use("/", templateRouter)
 
 const PORT = process.env.PORT || 5000   
 app.listen(PORT, async()=>{

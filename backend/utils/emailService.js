@@ -44,9 +44,21 @@ const formatCurrency = (amount) => {
 };
 
 // Generate email HTML template
-const generateOfferLetterEmail = (candidate, salaryBreakdown) => {
+const generateOfferLetterEmail = (candidate, salaryBreakdown, template = {}) => {
   const { fullName, reportingAddress, reportingDate, reportingTime, salaryLPA } = candidate;
   const { monthlyBasic, monthlyHRA, monthlyConveyance, monthlyMedical, monthlySpecial, totalMonthlyGross, totalAnnualGross } = salaryBreakdown;
+
+  const companyName = template.companyName || 'SchoolPrep Learning (UPRIO)';
+  const headerText = template.headerText || 'Welcome Aboard!';
+  const hrName = template.hrName || 'Chinmaya Mohapatra';
+  const hrPhone = template.hrPhone || '+91 97778 92291';
+  const hrEmail = template.hrEmail || 'hr@uprio.com';
+  const hrTeamName = template.hrTeamName || 'HR Team, Uprio';
+  const companyWebsite = template.companyWebsite || 'https://www.uprio.com/';
+  const companyLogoURL = template.companyLogoURL || 'https://lh3.googleusercontent.com/rd-mail-sig/AIorK4wBelQbdLMzVZUmLUv_ANIdpHlbTvGh2sqj1YYzYbKFUpdYG4fi1Do80LElYFsKBU1PtLncqGFE6MX2LiYernnRU0IfODJiWZDkNH7sdfaAhnz_uXiORdWdUAcf9hicLCEjK_XJ3FwK0Ui4V-KyMH8gCV35VKqCvESIZ3_wZExpNd9PdbS0k2gOY02DPtpvcqMGt5JS3X4SiS16wJEez11dbRuoHX1rJiRYJVZW7Qp-THNTybY94Yhqr0yjnTuvMAMSUjBGt4HCgG7WysXD-uwAinsX9yeOalbuiNIdgv0yg1U0ae5BQvflt8MNzsx_QP2SpBUMNO-pNhaa0jGoW1kYUBPNWwSwq6yrFX39HmL3d0WR8Hyhno5uZelcjOfAxB6PaNC6Vhh4YH7UD7aCJT2viwD7uoAKlrOGmRQRRwZ_CGpsAuNGyq40gAB_DtYXUyD14IEmM2KimX05-3a7-UEHn45fToNrMHlJuiA3WY4a6vtiUboWtSGx1xfpTp7xBh0MC_z15b-AEhYCVi_Rsln8lzcv9MT2-Pagz56vUxBMKlleoYJRwhXpoyB0IEv9sgG_nF8SEzpU0qRt0NnJa27i9oJ4kvtAkdxT2V7rP_yyx_4stpaRA3bgxqDorewp7GEJ5iJ1HD6EeQtCtbza-uV1NmDvtJfcbvvTHLA7i0ovOHZPEvVwUGfGV6kQqn7HcVwCOLI8oPtPMD7wWEgc82458rz7sEZEvSyoCfpTiUPTsPbQIGMjTCN2UL513L8e1K-sZtZKE0h8qgahgMq0ISTwkCzx647RsBlxYAYv2FSEahpabCoMaYAxgFlcMP-FV40mDc1SmM8Ul_546hi1oYIwXHQqBJJ3uDTAISVqCliUNyEsJ3_iIQMTxvsughPixc7bKz2-36KoP1t1LUAwjHj80yvwsT_sUMgbN6LyOaSUZALeBoZD_8xy1Y_aNJEPUQgP3DpVDeFCN-zOe8FVcTa2tK4AMq_ZM3IDHP67DnVxLocQSOBFK4bQmLT4i2wVDZrKBEIo8YUyKQ=s1600';
+  const thingsToCarry = template.thingsToCarry || 'Laptop';
+  const pfDeduction = template.pfDeduction || 1800;
+  const professionalTax = template.professionalTax || 200;
 
   const formattedDate = reportingDate
     ? new Date(reportingDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -80,12 +92,12 @@ const generateOfferLetterEmail = (candidate, salaryBreakdown) => {
     <body>
       <div class="container">
         <div class="header">
-          <h1>Welcome Aboard!</h1>
+          <h1>${headerText}</h1>
         </div>
         <div class="content">
           <p>Hi <strong>${fullName}</strong>,</p>
 
-          <p>Congratulations! We are excited to have you join us at <strong>SchoolPrep Learning (UPRIO)</strong>.</p>
+          <p>Congratulations! We are excited to have you join us at <strong>${companyName}</strong>.</p>
 
           <p>Attached is the offer letter that details the terms of your employment.</p>
 
@@ -94,7 +106,7 @@ const generateOfferLetterEmail = (candidate, salaryBreakdown) => {
             <p><strong>Reporting Address:</strong> ${reportingAddress || 'To be confirmed'}</p>
             <p><strong>Reporting Date:</strong> ${formattedDate}</p>
             <p><strong>Reporting Time:</strong> ${reportingTime || '11:00 AM'}</p>
-            <p><strong>Things to Carry:</strong> Laptop</p>
+            <p><strong>Things to Carry:</strong> ${thingsToCarry}</p>
           </div>
 
           <p><strong>Salary Package:</strong> <span class="highlight">${formatCurrency(salaryLPA * 100000)} per annum</span></p>
@@ -142,7 +154,7 @@ const generateOfferLetterEmail = (candidate, salaryBreakdown) => {
           </table>
 
           <div class="note">
-            <strong>Note:</strong> PF of Rs. 1,800 per month, Professional Tax of Rs. 200 per month and income tax (as applicable) would be deducted from the monthly gross salary to arrive at your monthly net pay.
+            <strong>Note:</strong> PF of Rs. ${formatCurrency(pfDeduction)} per month, Professional Tax of Rs. ${formatCurrency(professionalTax)} per month and income tax (as applicable) would be deducted from the monthly gross salary to arrive at your monthly net pay.
           </div>
 
           <p>Please acknowledge this email for confirmation of the offer. If you have any queries regarding the offer, please write back to us or call the undersigned on the given contact number.</p>
@@ -150,17 +162,17 @@ const generateOfferLetterEmail = (candidate, salaryBreakdown) => {
           <div class="footer">
             <p style="margin: 0 0 3px 0;"><strong>Warm Regards,</strong></p>
             <p style="margin: 3px 0;">
-              <strong>Chinmaya Mohapatra</strong><br>
-              PH: +91 97778 92291<br>
-              HR Team, Uprio
+              <strong>${hrName}</strong><br>
+              PH: ${hrPhone}<br>
+              ${hrTeamName}
             </p>
             <p style="margin: 3px 0 10px 0;">
-              <a href="mailto:hr@uprio.com" style="color: #667eea; text-decoration: none;">hr@uprio.com</a> ||
-              <a href="https://www.uprio.com/" style="color: #667eea; text-decoration: none;">https://www.uprio.com/</a>
+              <a href="mailto:${hrEmail}" style="color: #667eea; text-decoration: none;">${hrEmail}</a> ||
+              <a href="${companyWebsite}" style="color: #667eea; text-decoration: none;">${companyWebsite}</a>
             </p>
-            <div style="margin-top: 6px;">
-              <img src="https://lh3.googleusercontent.com/rd-mail-sig/AIorK4wBelQbdLMzVZUmLUv_ANIdpHlbTvGh2sqj1YYzYbKFUpdYG4fi1Do80LElYFsKBU1PtLncqGFE6MX2LiYernnRU0IfODJiWZDkNH7sdfaAhnz_uXiORdWdUAcf9hicLCEjK_XJ3FwK0Ui4V-KyMH8gCV35VKqCvESIZ3_wZExpNd9PdbS0k2gOY02DPtpvcqMGt5JS3X4SiS16wJEez11dbRuoHX1rJiRYJVZW7Qp-THNTybY94Yhqr0yjnTuvMAMSUjBGt4HCgG7WysXD-uwAinsX9yeOalbuiNIdgv0yg1U0ae5BQvflt8MNzsx_QP2SpBUMNO-pNhaa0jGoW1kYUBPNWwSwq6yrFX39HmL3d0WR8Hyhno5uZelcjOfAxB6PaNC6Vhh4YH7UD7aCJT2viwD7uoAKlrOGmRQRRwZ_CGpsAuNGyq40gAB_DtYXUyD14IEmM2KimX05-3a7-UEHn45fToNrMHlJuiA3WY4a6vtiUboWtSGx1xfpTp7xBh0MC_z15b-AEhYCVi_Rsln8lzcv9MT2-Pagz56vUxBMKlleoYJRwhXpoyB0IEv9sgG_nF8SEzpU0qRt0NnJa27i9oJ4kvtAkdxT2V7rP_yyx_4stpaRA3bgxqDorewp7GEJ5iJ1HD6EeQtCtbza-uV1NmDvtJfcbvvTHLA7i0ovOHZPEvVwUGfGV6kQqn7HcVwCOLI8oPtPMD7wWEgc82458rz7sEZEvSyoCfpTiUPTsPbQIGMjTCN2UL513L8e1K-sZtZKE0h8qgahgMq0ISTwkCzx647RsBlxYAYv2FSEahpabCoMaYAxgFlcMP-FV40mDc1SmM8Ul_546hi1oYIwXHQqBJJ3uDTAISVqCliUNyEsJ3_iIQMTxvsughPixc7bKz2-36KoP1t1LUAwjHj80yvwsT_sUMgbN6LyOaSUZALeBoZD_8xy1Y_aNJEPUQgP3DpVDeFCN-zOe8FVcTa2tK4AMq_ZM3IDHP67DnVxLocQSOBFK4bQmLT4i2wVDZrKBEIo8YUyKQ=s1600" alt="UPRIO Logo" style="height: 40px; width: auto;">
-            </div>
+            ${companyLogoURL ? `<div style="margin-top: 6px;">
+              <img src="${companyLogoURL}" alt="Company Logo" style="height: 40px; width: auto;">
+            </div>` : ''}
           </div>
         </div>
       </div>
@@ -174,18 +186,23 @@ const sendOfferLetterEmail = async (candidate) => {
   try {
     const transporter = createTransporter();
 
+    // Load email template settings
+    const EmailTemplate = require('../model/emailTemplate.model');
+    let template = await EmailTemplate.findOne();
+    if (!template) template = {};
+
     // Calculate salary breakdown
     const annualCTC = candidate.salaryLPA * 100000; // Convert LPA to actual amount
     const salaryBreakdown = calculateSalaryBreakdown(annualCTC);
 
     // Generate email HTML
-    const htmlContent = generateOfferLetterEmail(candidate, salaryBreakdown);
+    const htmlContent = generateOfferLetterEmail(candidate, salaryBreakdown, template);
 
     // Email options
     const mailOptions = {
-      from: `"UPRIO HR Team" <${process.env.EMAIL_USER}>`,
+      from: `"${template.hrTeamName || 'UPRIO HR Team'}" <${process.env.EMAIL_USER}>`,
       to: candidate.email,
-      subject: 'Welcome Aboard!',
+      subject: template.emailSubject || 'Welcome Aboard!',
       html: htmlContent,
     };
 

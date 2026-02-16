@@ -46,13 +46,29 @@ const getAllCandidates = async (req, res) => {
             }
             : {};
 
-        // Add email status filter if provided
+        // Add status filter if provided
         if (emailStatus === 'sent') {
             searchQuery.isEmailSent = true;
         } else if (emailStatus === 'not_sent') {
             searchQuery.isEmailSent = false;
         }
-        // If emailStatus is 'all' or undefined, don't add filter
+
+        const { status } = req.query;
+        if (status && status !== 'all') {
+            if (status === 'sent') {
+                searchQuery.status = { $in: ['offer_sent', 'accepted', 'rejected', 'joined'] };
+            } else if (status === 'joining_this_week') {
+                const now = new Date();
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(startOfWeek.getDate() + 7);
+                searchQuery.reportingDate = { $gte: startOfWeek, $lt: endOfWeek };
+            } else {
+                searchQuery.status = status;
+            }
+        }
 
         // Calculate pagination
         const pageNum = parseInt(page);
@@ -135,6 +151,57 @@ const deleteCandidate = async (req, res) => {
     }
 };
 
+// Get candidate stats for dashboard analytics
+const getCandidateStats = async (req, res) => {
+    try {
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+        const [totalCandidates, offersSent, offersPending, joiningThisWeek] = await Promise.all([
+            CandidateModel.countDocuments(),
+            CandidateModel.countDocuments({ status: { $in: ['offer_sent', 'accepted', 'rejected', 'joined'] } }),
+            CandidateModel.countDocuments({ status: 'pending' }),
+            CandidateModel.countDocuments({ reportingDate: { $gte: startOfWeek, $lt: endOfWeek } }),
+        ]);
+
+        res.status(200).json({ totalCandidates, offersSent, offersPending, joiningThisWeek });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Update candidate status
+const updateCandidateStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'offer_sent', 'accepted', 'rejected', 'joined'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    try {
+        const candidate = await CandidateModel.findById(id);
+        if (!candidate) {
+            return res.status(404).json({ message: "Candidate not found" });
+        }
+
+        candidate.status = status;
+        if (status !== 'pending') {
+            candidate.isEmailSent = true;
+        }
+
+        await candidate.save();
+        res.status(200).json({ message: "Status updated successfully", candidate });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const updateData = async (req, res) => {
     try {
         const candidates = await CandidateModel.find();
@@ -159,5 +226,7 @@ module.exports = {
     getCandidateById,
     updateCandidate,
     deleteCandidate,
-    updateData
+    updateData,
+    getCandidateStats,
+    updateCandidateStatus,
 };

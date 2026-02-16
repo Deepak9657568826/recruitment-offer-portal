@@ -23,6 +23,7 @@ const sendEmail = async (req, res) => {
     console.log("result", result) 
     if(result.success && result.messageId){
       candidate.isEmailSent = true;
+      candidate.status = 'offer_sent';
       await candidate.save();
     }
     res.status(200).json({
@@ -39,6 +40,50 @@ const sendEmail = async (req, res) => {
   }
 };
 
+const sendBulkEmail = async (req, res) => {
+  const { candidateIds } = req.body;
+
+  if (!candidateIds || !Array.isArray(candidateIds) || candidateIds.length === 0) {
+    return res.status(400).json({ message: 'Please provide an array of candidate IDs' });
+  }
+
+  try {
+    const candidates = await candidateModel.find({ _id: { $in: candidateIds } });
+    const results = { success: [], failed: [] };
+
+    for (const candidate of candidates) {
+      try {
+        if (!candidate.salaryLPA) {
+          results.failed.push({ id: candidate._id, name: candidate.fullName, reason: 'Missing salary information' });
+          continue;
+        }
+        if (candidate.isEmailSent) {
+          results.failed.push({ id: candidate._id, name: candidate.fullName, reason: 'Email already sent' });
+          continue;
+        }
+
+        const result = await sendOfferLetterEmail(candidate);
+        if (result.success && result.messageId) {
+          candidate.isEmailSent = true;
+          candidate.status = 'offer_sent';
+          await candidate.save();
+          results.success.push({ id: candidate._id, name: candidate.fullName });
+        }
+      } catch (emailError) {
+        results.failed.push({ id: candidate._id, name: candidate.fullName, reason: emailError.message });
+      }
+    }
+
+    res.status(200).json({
+      message: `Sent ${results.success.length} of ${candidates.length} emails`,
+      results,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Bulk email failed', error: error.message });
+  }
+};
+
 module.exports = {
   sendEmail,
+  sendBulkEmail,
 };

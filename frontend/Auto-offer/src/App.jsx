@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CandidateForm from './pages/CandidateForm';
 import CandidateDetail from './pages/CandidateDetail';
+import EmailSettings from './pages/EmailSettings';
 import './App.css';
 
 function App() {
@@ -49,6 +50,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CandidateDetail />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/email-settings"
+            element={
+              <ProtectedRoute>
+                <EmailSettings />
               </ProtectedRoute>
             }
           />
