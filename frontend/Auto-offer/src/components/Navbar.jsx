@@ -28,7 +28,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-base font-medium transition-all hover:bg-blue-50"
+              className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg text-base font-medium transition-all bg-blue-50 hover:bg-blue-50"
             >
               Dashboard
             </button>

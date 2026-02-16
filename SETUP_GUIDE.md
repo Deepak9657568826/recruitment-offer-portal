@@ -57,6 +57,7 @@ npm start
 ```
 
 Server will run on `http://localhost:5000`
+https://recruitment-offer-portal.onrender.com
 
 ### 2. Frontend Setup
 

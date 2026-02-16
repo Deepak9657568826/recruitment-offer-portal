@@ -1,36 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     const result = await register(formData);
     setLoading(false);
 
     if (result.success) {
+      showToast('Account created successfully! Please sign in.', 'success');
       navigate('/login');
     } else {
-      setError(result.message);
+      showToast(result.message, 'error');
     }
   };
 
@@ -113,12 +113,6 @@ const Register = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-base"
               />
             </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"

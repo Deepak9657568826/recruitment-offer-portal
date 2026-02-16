@@ -1,31 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     const result = await login(formData.email, formData.password);
     setLoading(false);
 
     if (result.success) {
+      showToast('Signed in successfully!', 'success');
       navigate('/dashboard');
     } else {
-      setError(result.message);
+      showToast(result.message, 'error');
     }
   };
 
@@ -74,12 +74,6 @@ const Login = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-base"
               />
             </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"

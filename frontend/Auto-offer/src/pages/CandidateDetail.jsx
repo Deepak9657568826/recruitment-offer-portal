@@ -74,7 +74,7 @@ const CandidateDetail = () => {
         <div className="mb-8">
           <button
             onClick={() => navigate('/dashboard')}
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 hover:bg-slate-600 font-medium mb-4 transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-1.5 rounded-lg font-medium mb-4 transition-colors"
           >
             <HiArrowLeft className="mr-2 h-5 w-5" />
             Back to Dashboard
@@ -166,7 +166,8 @@ const CandidateDetail = () => {
                 <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
                   <p className="text-sm text-gray-600 mb-2">Offer Letter PDF</p>
                   <a
-                    href={`http://localhost:5000/uploads/${candidate.offerLetterPDF}`}
+                    href={`https://recruitment-offer-portal.onrender.com/uploads/${candidate.offerLetterPDF}`}
+                    // href={`http://localhost:5000/uploads/${candidate.offerLetterPDF}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"

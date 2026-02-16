@@ -128,7 +128,7 @@ const CandidateForm = () => {
         <div className="mb-4">
           <button
             onClick={() => navigate("/dashboard")}
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 font-medium mb-3 transition-colors text-sm"
+            className="inline-flex items-center text-gray-600 hover:text-gray-900 hover:bg-gray-300 px-3 py-1.5 rounded-lg font-medium mb-3 transition-colors text-sm"
           >
             <HiArrowLeft className="mr-2 h-4 w-4" />
             Back to Dashboard
